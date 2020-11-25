@@ -53,3 +53,11 @@ class YelpClassifier(tf.keras.Model):
         x = tf.matmul(x, self.linear_W2) + self.linear_b2
 
         return x
+
+    def loss(self, logits, labels):
+        softmax_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels, logits, axis=-1))
+        return softmax_loss
+
+    def accuracy(self, logits, labels):
+        correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
+        return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
