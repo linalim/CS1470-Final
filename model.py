@@ -7,9 +7,9 @@ class YelpClassifier(tf.keras.Model):
     def __init__(self, train_size, test_size):
         super(YelpClassifier, self).__init__()
 
-        # self.batch_size = 100
+        self.batch_size = 100
         self.num_epoch = 1
-        # self.num_classes = 2
+        self.num_classes = 9    # ratings of 1.0, 1.5 ... 5.0 stars
         self.dropout_rate = 0.5
 
         # self.hidden_layer_size1 = 20
@@ -64,22 +64,53 @@ class YelpClassifier(tf.keras.Model):
         correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
         return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
 
+def train(model, train_inputs, train_labels):
+    losses = []
+    for i in range(0, len(train_inputs), model.batch_size):
+        if i + model.batch_size > len(train_inputs):    # remaining batch is too small
+            break
+
+        inputs_batch = train_inputs[i:i + model.batch_size]
+        labels_batch = train_labels[i:i + model.batch_size]
+
+        with tf.GradientTape() as tape:
+            logits = model.call(inputs_batch)
+            loss = model.loss(logits, labels_batch)
+
+        losses.append(loss)
+        gradients = tape.gradient(loss, model.trainable_variables)
+        model.optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+    
+    return np.average(np.array(losses))
+
+def test(model, test_inputs, test_labels):
+    accuracies = []
+    for i in range(0, len(test_inputs), model.batch_size):
+        if i + model.batch_size > len(test_inputs):    # remaining batch is too small
+            break
+
+        inputs_batch = test_inputs[i:i + model.batch_size]
+        labels_batch = test_labels[i:i + model.batch_size]
+
+        logits = model.call(inputs_batch)
+        accuracies.append(model.accuracy(logits, labels_batch))
+    
+    return np.average(np.array(accuracies))
+
 def main():
-    # Return the training and testing data from get_data
-    train_data, test_data = get_data("../../Downloads/yelp_dataset/yelp_academic_dataset_business.json", "../../Downloads/yelp_photos-5/photos.json", "food", test_fraction=0.2)
+    # Return the training and testing data and labels from get_data
+    train_data, train_labels, test_data, test_labels = get_data("../../Downloads/yelp_dataset/yelp_academic_dataset_business.json", "../../Downloads/yelp_photos-5/photos.json", "../../Downloads/yelp_photos-5/photos", "food")
 
     # Instantiate model
     model = YelpClassifier()
 
-    # Train and test for up to 15 epochs.
-    epochs = 15
-    for i in range(epochs):
-        print("Epoch:", i)
-        train(model, train_data)
-        accuracy = test(model, test_data)
-        print("Batch accuracy:", accuracy)
-        print()
+    # Train model
+    average_loss = train(model, train_data, train_labels)
+    print("Average loss:", average_loss)
 
+    # Test model
+    average_accuracy = test(model, test_data, test_labels)
+    print("Average accuracy:", average_accuracy)
 
 if __name__ == '__main__':
     main()

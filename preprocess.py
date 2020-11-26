@@ -1,10 +1,14 @@
 import json
-import cv2
+from matplotlib.image import imread
+import tensorflow as tf
 import numpy as np
 
-# Reads JSON file and returns a list of dictionaries (one dict for each JSON object).
-# filepath - path to JSON file
 def read_from_json_file(filepath):
+    """
+    Reads JSON file and returns it.
+    :param filepath: path to JSON file
+    :return: a list of dictionaries (one dict for each JSON object)
+    """
     data = []
     with open(filepath) as infile:
         for l in infile:
@@ -12,14 +16,17 @@ def read_from_json_file(filepath):
     print("Read in", len(data), "objects from", filepath)
     return data
 
-# Return training and testing data and labels for given label from business and image JSON.
-# business_json_filepath - path to yelp_academic_dataset_business.json
-# image_json_filepath - path to photos.json
-# image_filepath - path to directory with images
-# image_label - label to filter on
-# size - size (new_height, new_width) to resize each image in image batch to (ex: [32, 32])
-# test_fraction - fraction of data for testing
-def get_data(business_json_filepath, image_json_filepath, image_filepath, image_label, size, test_fraction=0.2):
+def get_data(business_json_filepath, image_json_filepath, image_filepath, image_label, size=[32, 32], test_fraction=0.2):
+    """
+    Reads business and image JSON files and images to return data for training and testing.
+    :param business_json_filepath: path to yelp_academic_dataset_business.json
+    :param image_json_filepath: path to photos.json
+    :param image_filepath: path to directory with images
+    :param image_label: label to filter on
+    :param size: size [new_height, new_width] to resize each image in image batch to
+    :param test_fraction: fraction of data for testing
+    :return: training and testing data and labels for given label from business and image JSON
+    """
     assert(image_label in ['food', 'menu', 'drink', 'inside', 'outside'])
     # Read in business JSON
     businesses = read_from_json_file(business_json_filepath)
@@ -40,8 +47,11 @@ def get_data(business_json_filepath, image_json_filepath, image_filepath, image_
         if i['label'] == image_label:
             # Add business_stars to labels
             labels.append(business_ratings[i['business_id']])
-            data.append(cv2.imread(image_filepath + i['photo_id'] + '.jpeg', mode='RGB'))
-            # data.append(i)
+            # Read image as numpy array
+            data.append(imread(image_filepath + i['photo_id'] + '.jpeg', mode='RGB'))
+
+    # Resize images to given size
+    data = tf.image.resize(tf.convert_to_tensor(data), size)
 
     print("Found", len(data), "images with label", label)
 
@@ -55,12 +65,3 @@ def get_data(business_json_filepath, image_json_filepath, image_filepath, image_
     print("test_data:", len(test_data))
 
     return train_data, train_labels, test_data, test_labels
-
-# Preprocesses given batch of images.
-# image_batch - batch of images
-# size - size (new_height, new_width) to resize each image in image batch to (ex: [32, 32])
-def preprocess_images(image_batch, size):
-    # image_batch = tf.image.rgb_to_grayscale(image_batch)
-    return tf.image.resize(image_batch, size)
-
-# get_data("../../Downloads/yelp_dataset/yelp_academic_dataset_business.json", "../../Downloads/yelp_photos-5/photos.json", "food", test_fraction=0.2)
