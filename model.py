@@ -1,3 +1,5 @@
+from preprocess import get_data, preprocess_images
+
 import numpy as np
 import tensorflow as tf
 
@@ -61,3 +63,23 @@ class YelpClassifier(tf.keras.Model):
     def accuracy(self, logits, labels):
         correct_predictions = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1))
         return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
+
+def main():
+    # Return the training and testing data from get_data
+    train_data, test_data = get_data("../../Downloads/yelp_dataset/yelp_academic_dataset_business.json", "../../Downloads/yelp_photos-5/photos.json", "food", test_fraction=0.2)
+
+    # Instantiate model
+    model = YelpClassifier()
+
+    # Train and test for up to 15 epochs.
+    epochs = 15
+    for i in range(epochs):
+        print("Epoch:", i)
+        train(model, train_data)
+        accuracy = test(model, test_data)
+        print("Batch accuracy:", accuracy)
+        print()
+
+
+if __name__ == '__main__':
+    main()
