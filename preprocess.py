@@ -55,6 +55,7 @@ def get_data(business_json_filepath, image_json_filepath, image_filepath, image_
 
     print("Found", len(data), "images with label", label)
 
+    # Split for training and testing
     split_index = int(len(data) * (1 - test_fraction))
     train_data = data[:split_index]
     test_data = data[split_index:]

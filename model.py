@@ -1,4 +1,4 @@
-from preprocess import get_data, preprocess_images
+from preprocess import get_data
 
 import numpy as np
 import tensorflow as tf
