@@ -40,9 +40,8 @@ def get_data(business_json_filepath, image_json_filepath, image_filepath, image_
     # Read in image JSON
     images = read_from_json_file(image_json_filepath)
 
-
     # TO DELETE
-    images = images[:20] # first 20 for testing purposes
+    images = images[:1000] # first 1000 for testing purposes
 
     # Categorize images by label
     data = []

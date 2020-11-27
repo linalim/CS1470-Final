@@ -1,18 +1,25 @@
 from preprocess import get_data
-
+import os
 import numpy as np
+import math
 import tensorflow as tf
 
 class YelpClassifier(tf.keras.Model):
-    def __init__(self):
+    def __init__(self, resnet):
         super(YelpClassifier, self).__init__()
+
+        # self.resnet_conv = resnet(include_top=True, weights='imagenet', pooling='max', classifier_activation='relu')
+        # self.resnet_avg = resnet(include_top=True, weights='imagenet', pooling='avg')
+        # self.linear = tf.keras.layers.Dense(512)
 
         self.batch_size = 100
         self.num_epoch = 1
         self.num_classes = 9    # ratings of 1.0, 1.5 ... 5.0 stars
         self.dropout_rate = 0.5
-
-        # self.hidden_layer_size1 = 20
+        self.learning_rate = 1e-3
+        self.hidden_layer1 = 80
+        self.hidden_layer2 = 40
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate = self.learning_rate)
 
         self.conv1 = tf.Variable(tf.random.truncated_normal([5, 5, 3, 5], stddev=0.1))
         self.b1 = tf.Variable(tf.random.truncated_normal([5], stddev=0.1))
@@ -20,31 +27,32 @@ class YelpClassifier(tf.keras.Model):
         self.conv2 = tf.Variable(tf.random.truncated_normal([5, 5, 5, 10], stddev=0.1))
         self.b2 = tf.Variable(tf.random.truncated_normal([10], stddev=0.1))
 
-        self.linear_b1 = tf.Variable(tf.random.truncated_normal([100], stddev=0.1))
-        self.linear_b2 = tf.Variable(tf.random.truncated_normal([1], stddev=0.1))
-        self.linear_W1 = tf.Variable(tf.random.truncated_normal([28090, 100], stddev=0.1))
-        self.linear_W2 = tf.Variable(tf.random.truncated_normal([100, 1], stddev=0.1))
+        self.linear_b1 = tf.Variable(tf.random.truncated_normal([self.hidden_layer2], stddev=0.1))
+        self.linear_b2 = tf.Variable(tf.random.truncated_normal([self.num_classes], stddev=0.1))
+        self.linear_W1 = tf.Variable(tf.random.truncated_normal([self.hidden_layer1, self.hidden_layer2], stddev=0.1))
+        self.linear_W2 = tf.Variable(tf.random.truncated_normal([self.hidden_layer2, self.num_classes], stddev=0.1))
 
     def call(self, inputs):
-
+        # BASIC NET
+        inputs = tf.convert_to_tensor(inputs, dtype=tf.float32)
         # CONVOLUTION LAYER 1
-        x = tf.nn.conv2d(inputs, self.conv1)
+        x = tf.nn.conv2d(inputs, self.conv1, strides=[1,1,1,1], padding='SAME')
         x = tf.nn.bias_add(x, self.b1)
         # MAX POOLING 1
-        x = tf.nn.max_pool(x, ksize=[2,2])
+        x = tf.nn.max_pool(x, ksize=[2,2], strides=[1,1,1,1], padding='SAME')
         # RELU 1
         x = tf.nn.relu(x)
 
         #CONVOLUTION LAYER 2
-        x = tf.nn.conv2d(x, self.conv2)
+        x = tf.nn.conv2d(x, self.conv2, strides=[1,1,1,1], padding='SAME')
         x = tf.nn.bias_add(x, self.b2)
         # MAX POOLING 2
-        x = tf.nn.max_pool(x, ksize=[2,2])
+        x = tf.nn.max_pool(x, ksize=[2,2], strides=[1,1,1,1], padding='SAME')
         # RELU 2
         x = tf.nn.relu(x)
 
         # RESHAPE
-        x = tf.reshape(x, [-1, 28090])
+        x = tf.reshape(x, [-1, self.hidden_layer1])
 
         # DENSE LAYER 1
         x = tf.matmul(x, self.linear_W1) + self.linear_b1
@@ -53,6 +61,14 @@ class YelpClassifier(tf.keras.Model):
 
         # DENSE LAYER 2
         x = tf.matmul(x, self.linear_W2) + self.linear_b2
+
+
+        # RESNET
+        # x = self.resnet_conv(inputs)
+        # x = self.resnet_avg(x)
+        # x = tf.reshape(x, [x.shape[0], -1])
+
+        # x = self.linear(x)
 
         return x
 
@@ -76,6 +92,8 @@ def train(model, train_inputs, train_labels):
 
         with tf.GradientTape() as tape:
             logits = model.call(inputs_batch)
+            print("LOOK HERE")
+            print(tf.shape(labels_batch))
             loss = model.loss(logits, labels_batch)
 
         losses.append(loss)
@@ -104,7 +122,8 @@ def main():
     train_data, train_labels, test_data, test_labels = get_data("../yelp-data/yelp_academic_dataset_business.json", "../yelp-data/photos.json", "../yelp-data/photos", "food")
 
     # Instantiate model
-    model = YelpClassifier()
+    m = tf.keras.applications.ResNet101V2()
+    model = YelpClassifier(m)
 
     # Train model
     average_loss = train(model, train_data, train_labels)
