@@ -1,6 +1,5 @@
 import json
 from matplotlib.image import imread
-# from cv2 import resize
 import tensorflow as tf
 import numpy as np
 from progressbar import ProgressBar
@@ -19,14 +18,12 @@ def read_from_json_file(filepath):
 
 def get_data(image_json_filepath, image_filepath, size=[32, 32], test_fraction=0.2):
     """
-    Reads business and image JSON files and images to return data for training and testing.
-    :param business_json_filepath: path to yelp_academic_dataset_business.json
-    :param image_json_filepath: path to photos.json
+    Reads image JSON file and images to return data for training and testing.
+    :param image_json_filepath: path to JSON file of desired dataset (e.g. food.json)
     :param image_filepath: path to directory with images
-    :param image_label: label to filter on
     :param size: size [new_height, new_width] to resize each image in image batch to
     :param test_fraction: fraction of data for testing
-    :return: training and testing data and labels for given label from business and image JSON
+    :return: training and testing data and labels
     """
     print("Preprocessing.")
 
