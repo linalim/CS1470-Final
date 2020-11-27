@@ -4,7 +4,7 @@ import numpy as np
 import tensorflow as tf
 
 class YelpClassifier(tf.keras.Model):
-    def __init__(self, train_size, test_size):
+    def __init__(self):
         super(YelpClassifier, self).__init__()
 
         self.batch_size = 100
@@ -65,6 +65,7 @@ class YelpClassifier(tf.keras.Model):
         return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
 
 def train(model, train_inputs, train_labels):
+    print("training")
     losses = []
     for i in range(0, len(train_inputs), model.batch_size):
         if i + model.batch_size > len(train_inputs):    # remaining batch is too small
@@ -84,6 +85,7 @@ def train(model, train_inputs, train_labels):
     return np.average(np.array(losses))
 
 def test(model, test_inputs, test_labels):
+    print("testing")
     accuracies = []
     for i in range(0, len(test_inputs), model.batch_size):
         if i + model.batch_size > len(test_inputs):    # remaining batch is too small
@@ -99,7 +101,7 @@ def test(model, test_inputs, test_labels):
 
 def main():
     # Return the training and testing data and labels from get_data
-    train_data, train_labels, test_data, test_labels = get_data("../../Downloads/yelp_dataset/yelp_academic_dataset_business.json", "../../Downloads/yelp_photos-5/photos.json", "../../Downloads/yelp_photos-5/photos", "food")
+    train_data, train_labels, test_data, test_labels = get_data("../yelp-data/yelp_academic_dataset_business.json", "../yelp-data/photos.json", "../yelp-data/photos", "food")
 
     # Instantiate model
     model = YelpClassifier()

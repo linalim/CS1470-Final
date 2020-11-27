@@ -1,5 +1,6 @@
 import json
 from matplotlib.image import imread
+from cv2 import imread, resize
 import tensorflow as tf
 import numpy as np
 
@@ -39,6 +40,10 @@ def get_data(business_json_filepath, image_json_filepath, image_filepath, image_
     # Read in image JSON
     images = read_from_json_file(image_json_filepath)
 
+
+    # TO DELETE
+    images = images[:20] # first 20 for testing purposes
+
     # Categorize images by label
     data = []
     labels = []
@@ -48,12 +53,16 @@ def get_data(business_json_filepath, image_json_filepath, image_filepath, image_
             # Add business_stars to labels
             labels.append(business_ratings[i['business_id']])
             # Read image as numpy array
-            data.append(imread(image_filepath + i['photo_id'] + '.jpeg', mode='RGB'))
+            data.append(imread(image_filepath + '/' + i['photo_id'] + '.jpg'))
 
     # Resize images to given size
-    data = tf.image.resize(tf.convert_to_tensor(data), size)
+    # data = tf.image.resize(tf.convert_to_tensor(data), size)
+    resized_data = []
+    for d in data:
+        resized_data.append(resize(d, tuple(size)))
+    data = resized_data
 
-    print("Found", len(data), "images with label", label)
+    print("Found", len(data), "images with label", labels)
 
     # Split for training and testing
     split_index = int(len(data) * (1 - test_fraction))
