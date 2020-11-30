@@ -23,7 +23,7 @@ base_model = ResNet101V2(include_top=False, weights='imagenet')
 # Adding custom layers at the end of the network
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
-x = Dense(5000, activation='relu')(x)
+x = Dense(512, activation='relu')(x)
 x = Dropout(0.6)(x)
 predictions = Dense(5, activation='softmax')(x)     # star rating of 1 - 5
 
