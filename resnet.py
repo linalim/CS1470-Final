@@ -41,7 +41,7 @@ model.compile(optimizer=SGD(lr=0.01, momentum=0.9), loss='categorical_crossentro
 train_data, train_labels, test_data, test_labels = get_data("data/json/inside.json", "../yelp-data/photos", size=[100, 100], test_one_hot=False)
 
 # Training the model!
-model.fit(train_data, train_labels, batch_size=100, epochs=25, verbose=1)
+model.fit(train_data, train_labels, batch_size=100, epochs=10, verbose=1)
  
 # Saving the weights and model architecture
 save_model(model, "resnet_weights.h5", "resnet_model.json")
