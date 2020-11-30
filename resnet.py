@@ -38,7 +38,7 @@ model = Model(inputs=base_model.input, outputs=predictions)
 model.compile(optimizer=SGD(lr=0.01, momentum=0.9), loss='categorical_crossentropy', metrics = ['accuracy'])
 
 # Return the training and testing data and labels from get_data
-train_data, train_labels, test_data, test_labels = get_data("data/json/inside.json", "../yelp-data/photos", size=[50, 50], test_one_hot=False)
+train_data, train_labels, test_data, test_labels = get_data("data/json/menu.json", "../yelp-data/photos", size=[50, 50], test_one_hot=False)
 
 # Training the model!
 model.fit(train_data, train_labels, batch_size=100, epochs=25, verbose=1)
