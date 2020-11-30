@@ -23,7 +23,7 @@ base_model = ResNet101V2(include_top=False, weights='imagenet')
 # Adding custom layers at the end of the network
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
-x = Dense(206, activation='relu')(x)
+x = Dense(512, activation='relu')(x)
 x = Dropout(0.6)(x)
 predictions = Dense(5, activation='softmax')(x)     # star rating of 1 - 5
 
@@ -38,7 +38,7 @@ model = Model(inputs=base_model.input, outputs=predictions)
 model.compile(optimizer=SGD(lr=0.01, momentum=0.9), loss='categorical_crossentropy', metrics = ['accuracy'])
 
 # Return the training and testing data and labels from get_data
-train_data, train_labels, test_data, test_labels = get_data("data/json/inside.json", "../yelp-data/photos", size=[100, 100], test_one_hot=False)
+train_data, train_labels, test_data, test_labels = get_data("data/json/inside.json", "../yelp-data/photos", size=[50, 50], test_one_hot=False)
 
 # Training the model!
 model.fit(train_data, train_labels, batch_size=100, epochs=10, verbose=1)
