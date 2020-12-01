@@ -24,7 +24,7 @@ base_model = ResNet50V2(include_top=False, weights='imagenet')
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
 x = Dense(1024, activation='relu')(x)
-x = Dropout(0.5)(x)
+x = Dropout(0.7)(x)
 predictions = Dense(5, activation='softmax')(x)     # star rating of 1 - 5
 
 # Creating a trainable model
@@ -35,7 +35,7 @@ model = Model(inputs=base_model.input, outputs=predictions)
 #     layer.trainable = False
  
 # Compiling the model
-model.compile(optimizer=SGD(lr=0.00001, momentum=0.9), loss='categorical_crossentropy', metrics = ['accuracy'])
+model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics = ['accuracy'])
 
 # Return the training and testing data and labels from get_data
 train_data, train_labels, test_data, test_labels = get_data("data/json/menu.json", "../yelp-data/photos", size=[75, 75], test_one_hot=False)
