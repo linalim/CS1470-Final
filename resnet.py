@@ -24,7 +24,7 @@ base_model = ResNet50V2(include_top=False, weights='imagenet')
 x = base_model.output
 x = GlobalAveragePooling2D()(x)
 x = Dense(1024, activation='relu')(x)
-x = Dropout(0.8)(x)
+x = Dropout(0.4)(x)
 predictions = Dense(5, activation='softmax')(x)     # star rating of 1 - 5
 
 # Creating a trainable model
