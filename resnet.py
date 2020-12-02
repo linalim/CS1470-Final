@@ -35,10 +35,10 @@ model = Model(inputs=base_model.input, outputs=predictions)
 #     layer.trainable = False
  
 # Compiling the model
-model.compile(optimizer=SGD(lr=0.000001, momentum=0.9), loss='categorical_crossentropy', metrics = ['accuracy'])
+model.compile(optimizer=SGD(lr=0.00001, momentum=0.9), loss='categorical_crossentropy', metrics = ['accuracy'])
 
 # Return the training and testing data and labels from get_data
-train_data, train_labels, test_data, test_labels = get_data("data/json/outside.json", "../yelp-data/photos", size=[75, 75], test_one_hot=False)
+train_data, train_labels, test_data, test_labels = get_data("data/json/outside.json", "../yelp-data/photos", size=[100, 100], test_one_hot=False)
 
 # Training the model!
 model.fit(train_data, train_labels, batch_size=100, epochs=40, verbose=1)
