@@ -83,7 +83,6 @@ def discriminator_loss(real_output, fake_output, cross_entropy):
 def generator_loss(fake_output, cross_entropy):
     return cross_entropy(tf.ones_like(fake_output), fake_output)
 
-
 # Notice the use of `tf.function`
 # This annotation causes the function to be "compiled".
 @tf.function
@@ -107,6 +106,8 @@ def train_step(images, generator, discriminator, generator_optimizer, discrimina
     generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
 
+    return gen_loss, disc_loss
+
 def train(train_images, epochs, generator, discriminator, generator_optimizer, discriminator_optimizer, noise_dim, seed):
 
     train_images = (train_images - 127.5) / 127.5 # Normalize the images to [-1, 1]
@@ -116,19 +117,22 @@ def train(train_images, epochs, generator, discriminator, generator_optimizer, d
 
     # Batch and shuffle the data
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
+
     for epoch in range(epochs):
-        start = time.time()
-
+        # start = time.time()
+        gen_losses = []
+        disc_losses = []
         for image_batch in train_dataset:
-            train_step(image_batch, generator, discriminator, generator_optimizer, discriminator_optimizer, noise_dim)
-
+            gen_loss, disc_loss = train_step(image_batch, generator, discriminator, generator_optimizer, discriminator_optimizer, noise_dim)
+            gen_losses.append(gen_loss)
+            disc_losses.append(disc_loss)
             # Produce images for the GIF as we go
             display.clear_output(wait=True)
             generate_and_save_images(generator,
                                     epoch + 1,
                                     seed)
 
-            # # Save the model every 15 epochs
+            # Save the model every 15 epochs
             # if (epoch + 1) % 15 == 0:
             #   checkpoint.save(file_prefix = checkpoint_prefix)
 
@@ -139,6 +143,7 @@ def train(train_images, epochs, generator, discriminator, generator_optimizer, d
         generate_and_save_images(generator,
                                 epochs,
                                 seed)
+    return (np.average(np.array(gen_losses)), np.average(np.array(disc_losses)))
 
 def generate_and_save_images(model, epoch, test_input):
   # Notice `training` is set to False.
@@ -153,7 +158,7 @@ def generate_and_save_images(model, epoch, test_input):
       plt.axis('off')
 
   plt.savefig('image_at_epoch_{:04d}.png'.format(epoch))
-  plt.show()
+#   plt.show()
 
 # Display a single image using the epoch number
 def display_image(epoch_no):
@@ -173,7 +178,7 @@ def main():
 
     ################################################################################################
     # Load data
-    train_images, train_labels, test_data, test_labels = get_data("data/json/menu.json", "../yelp-data/photos", size=[32, 32], test_one_hot=True)
+    train_images, train_labels, test_data, test_labels = get_data("data/json/food.json", "../yelp-data/photos", size=[32, 32], test_one_hot=True)
 
     # Instantiate generator model
     generator = make_generator_model()
@@ -189,9 +194,11 @@ def main():
     print(decision)
 
     # Train
-    train(train_images, EPOCHS, generator, discriminator, generator_optimizer, discriminator_optimizer, noise_dim, seed)
+    gen_loss, disc_loss = train(train_images, EPOCHS, generator, discriminator, generator_optimizer, discriminator_optimizer, noise_dim, seed)
 
-    display_image(EPOCHS)
+    # display_image(EPOCHS)
+    # print("Average generator loss: ", gen_loss)
+    # print("Average discriminator loss: ", disc_loss)
 
 
 if __name__ == '__main__':
