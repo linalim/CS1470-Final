@@ -18,7 +18,7 @@ class Gan(tf.keras.Model):
         self.cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
         self.generator_optimizer = tf.keras.optimizers.Adam(1e-4)
         self.discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
-        self.EPOCHS = 500
+        self.EPOCHS = 50000
         self.noise_dim = 100
         self.num_examples_to_generate = 16
         self.seed = tf.random.normal([self.num_examples_to_generate, self.noise_dim])
