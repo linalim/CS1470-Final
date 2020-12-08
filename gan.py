@@ -156,7 +156,7 @@ def main():
     noise = tf.random.normal([1, 100])
     generated_image = generator(noise, training=False)
 
-    plt.imshow(np.array(generated_image[0, :, :, 0], dtype=float))
+    plt.imshow(generated_image[0, :, :, 0])
 
     # Instantiate discriminator model
     discriminator = gan.make_discriminator_model()
