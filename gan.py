@@ -144,7 +144,7 @@ def main():
     # Load data
     train_images, train_labels, test_data, test_labels = get_data("data/json/food.json", "../yelp-data/photos", size=[32, 32], gan=True, test_one_hot=True)
 
-    train_images = (train_images - 127.5) / 127.5 # Normalize the images to [-1, 1]
+    # train_images = (train_images - 127.5) / 127.5 # Normalize the images to [-1, 1]
 
     gan = Gan()
     train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(gan.BUFFER_SIZE).batch(gan.BATCH_SIZE)
