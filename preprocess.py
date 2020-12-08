@@ -58,7 +58,7 @@ def get_data(image_json_filepath, image_filepath, size, test_one_hot, gan, test_
                 data.append(img)
 
 
-    # data = tf.convert_to_tensor(data)
+    data = tf.convert_to_tensor(data)
     print("Collected", len(data), "images based on criteria")
 
     # Split for training and testing
