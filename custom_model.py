@@ -104,7 +104,7 @@ def test(model, test_inputs, test_labels):
 
 def main():
     # Return the training and testing data and labels from get_data
-    train_data, train_labels, test_data, test_labels = get_data("data/json/menu.json", "../yelp-data/photos", size=[32, 32], test_one_hot=True)
+    train_data, train_labels, test_data, test_labels = get_data("data/json/menu.json", "../yelp-data/photos", size=[32, 32], gan=False, test_one_hot=True)
 
     # Instantiate model
     model = YelpClassifier()

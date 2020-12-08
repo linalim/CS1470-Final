@@ -17,7 +17,7 @@ def read_from_json_file(filepath):
     print("Read in", len(data), "objects from", filepath)
     return data
 
-def get_data(image_json_filepath, image_filepath, size, test_one_hot, test_fraction=0.2):
+def get_data(image_json_filepath, image_filepath, size, test_one_hot, gan, test_fraction=0.2):
     """
     Reads image JSON file and images to return data for training and testing.
     :param image_json_filepath: path to JSON file of desired dataset (e.g. food.json)
@@ -37,14 +37,26 @@ def get_data(image_json_filepath, image_filepath, size, test_one_hot, test_fract
     labels = []
     print("Reading in images.")
     pbar = ProgressBar(maxval=len(images))
-    for i in pbar(images):
-        if i['business_stars'] % 1 == 0:
-            # Add business_stars to labels
-            labels.append(int(i['business_stars']) - 1)  # label 0 = star 1
-            # Read image as numpy array
-            img = tf.convert_to_tensor(imread(image_filepath + '/' + i['photo_id'] + '.jpg'), dtype=tf.float32)
-            img = tf.image.resize(img, size)
-            data.append(img)
+
+    if gan==False:
+        for i in pbar(images):
+            if i['business_stars'] % 1 == 0:
+                # Add business_stars to labels
+                labels.append(int(i['business_stars']) - 1)  # label 0 = star 1
+                # Read image as numpy array
+                img = tf.convert_to_tensor(imread(image_filepath + '/' + i['photo_id'] + '.jpg'), dtype=tf.float32)
+                img = tf.image.resize(img, size)
+                data.append(img)
+    else: # if we're preprocessing for gan, only five-stars
+        for i in pbar(images):
+            if i['business_stars'] == 5:
+                # Add business_stars to labels
+                labels.append(int(i['business_stars']) - 1)  # label 0 = star 1
+                # Read image as numpy array
+                img = tf.convert_to_tensor(imread(image_filepath + '/' + i['photo_id'] + '.jpg'), dtype=tf.float32)
+                img = tf.image.resize(img, size)
+                data.append(img)
+
 
     data = tf.convert_to_tensor(data)
     print("Collected", len(data), "images based on criteria")
