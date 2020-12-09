@@ -47,7 +47,7 @@ model.fit(train_data, train_labels, batch_size=100, epochs=40, verbose=1)
 save_model(model, "resnet_weights.h5", "resnet_model.json")
  
 # Evaluate with the test set
-print(model.evaluate(test_data), 1)
+print(model.evaluate(test_data, test_labels))
 # test_labels = tf.cast(test_labels, dtype=tf.int64)
 
 # print("Accuracy on test set:", tf.math.count_nonzero(tf.math.equal(predictions, test_labels)) / len(test_labels))
