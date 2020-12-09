@@ -57,7 +57,7 @@ def get_data(image_json_filepath, image_filepath, size, test_one_hot, test_fract
     if test_one_hot:
         test_labels = tf.one_hot(labels[split_index:], 5)
     else:
-        test_labels = labels[split_index:]
+        test_labels = tf.convert_to_tensor(labels[split_index:])
 
     print("train_data:", len(train_data))
     print("test_data:", len(test_data))
@@ -81,8 +81,11 @@ def clean_up_photos():
         for d in data:
             if d['business_stars'] % 1 == 0:
                 used_photos.add(d['photo_id'])
-
+    # print(used_photos)
+    pbar = ProgressBar()
     for photo in pbar(os.listdir("../yelp-data/photos")):
         # print(photo)
+        # if photo.split(".")[0] == '06zkDxNWgUjQelP9xg3rug' and photo.split(".")[0] in used_photos:
+        #     print("DINGDONGDINDO")
         if photo.split(".")[0] not in used_photos:
             os.remove("../yelp-data/photos/" + photo)
