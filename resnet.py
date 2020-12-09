@@ -38,7 +38,7 @@ model = Model(inputs=base_model.input, outputs=predictions)
 model.compile(optimizer=SGD(lr=0.0001, momentum=0.9), loss='categorical_crossentropy', metrics = ['accuracy'])
 
 # Return the training and testing data and labels from get_data
-train_data, train_labels, test_data, test_labels = get_data("data/json/drink.json", "../yelp-data/photos", size=[75, 75], test_one_hot=False)
+train_data, train_labels, test_data, test_labels = get_data("data/json/menu.json", "../yelp-data/photos", size=[75, 75], test_one_hot=False)
 
 # Training the model!
 model.fit(train_data, train_labels, batch_size=100, epochs=40, verbose=1)
@@ -46,8 +46,8 @@ model.fit(train_data, train_labels, batch_size=100, epochs=40, verbose=1)
 # Saving the weights and model architecture
 save_model(model, "resnet_weights.h5", "resnet_model.json")
  
-# Making predictions with the test set
-predictions = tf.argmax(model.predict(test_data), 1)
-test_labels = tf.cast(test_labels, dtype=tf.int64)
+# Evaluate with the test set
+print(model.evaluate(test_data), 1)
+# test_labels = tf.cast(test_labels, dtype=tf.int64)
 
-print("Accuracy on test set:", tf.math.count_nonzero(tf.math.equal(predictions, test_labels)) / len(test_labels))
+# print("Accuracy on test set:", tf.math.count_nonzero(tf.math.equal(predictions, test_labels)) / len(test_labels))
