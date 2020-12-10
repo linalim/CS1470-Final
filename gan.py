@@ -105,15 +105,14 @@ def train(model, dataset, epochs, generator, discriminator, checkpoint):
         for image_batch in dataset:
             train_step(model, image_batch, generator, discriminator)
 
-        # Produce images for the GIF as we go
-        display.clear_output(wait=True)
-        generate_and_save_images(generator,
-                                epoch + 1,
-                                model.seed)
-
-        # Save the model every 15 epochs
-        if (epoch + 1) % 15 == 0:
+        # Save the model every 1000 epochs
+        if (epoch + 1) % 1000 == 0:
             checkpoint.save(file_prefix = model.checkpoint_prefix)
+            # Produce images for the GIF as we go
+            display.clear_output(wait=True)
+            generate_and_save_images(generator,
+                                    epoch + 1,
+                                    model.seed)
 
         print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
 
