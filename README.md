@@ -1,6 +1,6 @@
 # CS1470-Final
 
-Before starting, make sure to put all the dataset images into yelp-data/photos outside of the project folder,
+Before starting, make sure to put all the dataset images into `yelp-data/photos` right outside of the project folder,
 and create an output directory inside the project folder.
 
 ----------------
