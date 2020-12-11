@@ -24,6 +24,7 @@ def get_data(image_json_filepath, image_filepath, size, test_one_hot, gan, test_
     :param image_filepath: path to directory with images
     :param size: size [new_height, new_width] to resize each image in image batch to
     :param test_one_hot: True if test labels also need to be one-hot, False otherwise
+    :param gan: True if called from GAN, False otherwise
     :param test_fraction: fraction of data for testing
     :return: training and testing data and labels
     """
@@ -69,7 +70,7 @@ def get_data(image_json_filepath, image_filepath, size, test_one_hot, gan, test_
     if test_one_hot:
         test_labels = tf.one_hot(labels[split_index:], 5)
     else:
-        test_labels = labels[split_index:]
+        test_labels = tf.convert_to_tensor(labels[split_index:])
 
     print("train_data:", len(train_data))
     print("test_data:", len(test_data))
