@@ -1,7 +1,7 @@
 from preprocess import get_data
 
 import tensorflow as tf
-from tensorflow.keras.applications.resnet_v2 import ResNet101V2
+from tensorflow.keras.applications.resnet_v2 import ResNet50V2
 from tensorflow.keras.layers import Dense, Dropout, GlobalAveragePooling2D
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import SGD
@@ -18,7 +18,7 @@ def save_model(model, weights_filepath, model_filepath):
         json_file.write(model_json)
  
 # Using ResNet architecture initialized with ImageNet weights and default fully connected layer removed
-base_model = ResNet101V2(include_top=False, weights='imagenet')
+base_model = ResNet50V2(include_top=False, weights='imagenet')
 
 # Adding custom layers at the end of the network
 x = base_model.output
